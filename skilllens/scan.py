@@ -224,7 +224,7 @@ def _builtin_records():
 
 
 def _merge_record(rec, source, records, by_key, where=""):
-    """Insert rec with rank dedupe; later/higher-rank source wins, ties keep first."""
+    """Insert rec with rank dedupe; later/higher-rank source wins, ties keep later."""
     key = rec["key"]
     prev = by_key.get(key)
     if prev is None:
@@ -232,8 +232,8 @@ def _merge_record(rec, source, records, by_key, where=""):
         records.append(rec)
         return
     pr, nr = SOURCE_RANK.get(prev["source"], 0), SOURCE_RANK.get(source, 0)
-    if nr > pr:
-        # why: file copies override builtin/upstream docs on collision
+    if nr >= pr:
+        # why: later roots win ties, file copies override builtin/upstream docs
         print(f"dedupe: replace {prev['source']} '{key}' with {source} from {where}", file=sys.stderr)
         records[records.index(prev)] = rec
         by_key[key] = rec
