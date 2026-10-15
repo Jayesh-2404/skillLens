@@ -26,7 +26,7 @@ HELP_TEXT = """commands:
   roots      print discovered roots inline
   clear      clear screen
   help       show this help
-  exitquit  quit (also Ctrl-C)""".replace("exitquit", "exit/quit")
+  exit/quit  quit (also Ctrl-C)"""
 
 # ANSI codes (guarded by _color_enabled).
 _BOLD = "\x1b[1m"

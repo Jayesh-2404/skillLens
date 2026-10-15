@@ -48,6 +48,17 @@ def test_dedupe_prefers_local_and_project_over_pstack():
         assert len(recs2) == 1 and recs2[0]["source"] == "project", f"project should win: {recs2}"
 
 
+def test_dedupe_tiebreak_later_root_wins():
+    with tempfile.TemporaryDirectory() as tmp:
+        first = os.path.join(tmp, "first")
+        second = os.path.join(tmp, "second")
+        _write_skill(os.path.join(first, "dup"), "dup", "first copy versionAAA")
+        _write_skill(os.path.join(second, "dup"), "dup", "second copy versionBBB")
+        recs = scan.scan_roots([(first, "custom"), (second, "custom")])
+        assert len(recs) == 1, f"expected 1 after dedupe, got {len(recs)}"
+        assert "versionBBB" in recs[0]["description"], f"later root should win ties: {recs[0]}"
+
+
 if __name__ == "__main__":
     test_discover_roots_returns_existing()
     print("PASS test_discover_roots_returns_existing")
@@ -55,4 +66,6 @@ if __name__ == "__main__":
     print("PASS test_recursive_scan_finds_nested")
     test_dedupe_prefers_local_and_project_over_pstack()
     print("PASS test_dedupe_prefers_local_and_project_over_pstack")
+    test_dedupe_tiebreak_later_root_wins()
+    print("PASS test_dedupe_tiebreak_later_root_wins")
     print("all tests passed")
